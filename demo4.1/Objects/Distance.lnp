@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\num.obj",
+".\Objects\uart.obj" 
+TO ".\Objects\Distance" 
+PRINT(".\Listings\Distance.m51")

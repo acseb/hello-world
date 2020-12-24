@@ -1,0 +1,134 @@
+C51 COMPILER V9.57.0.0   UART                                                              12/15/2020 09:29:27 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN .\Objects\uart.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE User\uart.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Include) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\uart.lst) TABS(2) OBJECT(.\Objects\uart.obj)
+
+line level    source
+
+   1          #include "uart.h"
+   2          
+   3          /**
+   4          * @brief:初始化串口以及T2定时器
+   5          * @Name:InitUart
+   6          * @author: 郭轩铭
+   7          * @Data:2020-12-08
+   8          * @version:V1.0
+   9          * @param:空
+  10          * @return:空
+  11          **/
+  12          void InitConfig(void)
+  13          {
+  14   1          /*
+  15   1           * SCON: 方式 1, 8-bit, 允许接收数据
+  16   1           * TMOD: 设置定时器1工作在方式2, 8-bit 自动重装
+  17   1           * TH1:  初始值为0xFD  波特率：9600 晶振频率：11.0592MHz
+  18   1           */
+  19   1          SCON = 0x50;
+  20   1          TMOD |= 0x20;
+  21   1          TH1 = 0xFD;
+  22   1          TL1 = 0xFD;
+  23   1          TR1 = 1;
+  24   1          EA  = 1;
+  25   1          //打开串口中断
+  26   1          ES  = 1;
+  27   1      
+  28   1          /* T2定时器赋预装载值，溢出16次就是1秒。 */
+  29   1          RCAP2H=0x0B;
+  30   1          RCAP2L=0xDC;
+  31   1          /*允许T2中断*/
+  32   1          ET2=1;
+  33   1          /*启动T2定时器*/
+  34   1          TR2=1;
+  35   1      }
+  36          
+  37          /**
+  38          * @brief:发送一个字节数据
+  39          * @Name:UartSendByte
+  40          * @author: 郭轩铭
+  41          * @Data:2020-12-08
+  42          * @version:V1.0
+  43          * @param:[in] dat 待输入byte
+  44          * @return:空
+  45          **/
+  46          void UartSendByte(unsigned char dat)
+  47          {
+  48   1          SBUF = dat;
+  49   1          while(!TI);
+  50   1          TI = 0;
+  51   1      }
+  52          
+  53          /**
+  54          * @brief:发送字符串
+C51 COMPILER V9.57.0.0   UART                                                              12/15/2020 09:29:27 PAGE 2   
+
+  55          * @Name:UartSendStr
+  56          * @author: 郭轩铭
+  57          * @Data:2020-12-08
+  58          * @version:V1.0
+  59          * @param:[in] str 输入字符串指针
+  60          * @return:空
+  61          **/
+  62          void UartSendStr(unsigned char *str)
+  63          {
+  64   1          while(*str != '\0')
+  65   1          {
+  66   2              UartSendByte(*str);
+  67   2              str++;
+  68   2          }
+  69   1          UartSendByte('\r');
+  70   1          UartSendByte('\n');
+  71   1      }
+  72          
+  73          /**
+  74          * @brief:判断密码
+  75          * @Name:CheckPassword
+  76          * @author: 郭轩铭
+  77          * @Data:2020-12-08
+  78          * @version:V1.0
+  79          * @param:空
+  80          * @return:空
+  81          **/
+  82          //void CheckPassword()
+  83          //{
+  84          //    //测试输出字符串
+  85          //    UartSendStr(ReadBuff);
+  86          //    //加入换行
+  87          //    UartSendByte('\r');
+  88          //    UartSendByte('\n');
+  89          //}
+  90          
+  91          /**
+  92          * @brief:串口中断处理函数 （串口接收到数据，发送数据完毕都可以引起串口中断）
+  93          * @Name:UartInterrupt
+  94          * @author: 郭轩铭
+  95          * @Data:2020-12-08
+  96          * @version:V1.0
+  97          * @param:空
+  98          * @return:空
+  99          **/
+ 100          void UartInterrupt(void) interrupt 4
+ 101          {
+ 102   1          if(RI==1)
+ 103   1          {
+ 104   2              RI = 0;
+ 105   2          }
+ 106   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     71    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.57.0.0   UART                                                              12/15/2020 09:29:27 PAGE 3   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

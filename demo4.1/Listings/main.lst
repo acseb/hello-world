@@ -1,0 +1,144 @@
+C51 COMPILER V9.57.0.0   MAIN                                                              12/15/2020 16:05:41 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE User\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Include) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /**
+   2          * @file:main.c
+   3          * @copyright:Copyright 2020-2021 SGMW. Co. Ltd. All Rights Reserved.
+   4          * @brief:
+   5          * @detail:
+   6          * @author:郭轩铭
+   7          * @date:2020-11-27
+   8          * @version:v1.0
+   9          * @record:修改记录
+  10          */
+  11          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+  12          #include "num.h"
+  13          #include "intrins.h"
+  14          #include "uart.h"
+  15          
+  16          u8 code smgduan[16]= {0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  17                                0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71
+  18                               };//显示0~F的值
+  19          
+  20          u8 light[3] = {0,0,0};
+  21          
+  22          u8 num = 0;
+  23          
+  24          u8 ReadBuff[10];
+  25          
+  26          sbit echo = P1^1;
+  27          sbit trig = P1^0;
+  28          
+  29          u16   timeh,timel,time = 0;
+  30          
+  31          /**
+  32          * @brief:中断器初始化
+  33          * @Name:Timer0Init
+  34          * @author: 郭轩铭
+  35          * @Data:2020-11-27
+  36          * @version:V1.0
+  37          * @param:空
+  38          * @return:空
+  39          **/
+  40          void Timer0Init(void)
+  41          {
+  42   1          TMOD = 0x09;
+  43   1          TH0=0; //设置初值
+  44   1          TL0=0;
+  45   1          EA = 1;
+  46   1          ET0 = 1;
+  47   1      }
+  48          
+  49          /**
+  50          * @brief:中断函数
+  51          * @Name:Timer0
+  52          * @author: 郭轩铭
+  53          * @Data:2020-11-27
+  54          * @version:V1.0
+C51 COMPILER V9.57.0.0   MAIN                                                              12/15/2020 16:05:41 PAGE 2   
+
+  55          * @param:空
+  56          * @return:空
+  57          **/
+  58          void Timer0Initrupt(void) interrupt 1
+  59          {
+  60   1          TH0=0; //设置初值
+  61   1          TL0=0;
+  62   1      }
+  63          
+  64          /**
+  65          * @brief:计算距离
+  66          * @Name:Conut
+  67          * @author: 郭轩铭
+  68          * @Data:2020-12-15
+  69          * @version:V1.0
+  70          * @param:空
+  71          * @return:空
+  72          **/
+  73          void Conut(void)
+  74          {
+  75   1          time=TH0*256+TL0;
+  76   1          TH0=0;
+  77   1          TL0=0;
+  78   1          num=(time*1.7)/100; //算出来是CM
+  79   1          if(num >= 500)
+  80   1            num = 500;
+  81   1          Cal();
+  82   1      }
+  83          
+  84          /**
+  85          * @brief:主函数
+  86          * @Name:main
+  87          * @author: 郭轩铭
+  88          * @Data:2020-11-27
+  89          * @version:V1.0
+  90          * @param:空
+  91          * @return:空
+  92          **/
+  93          void main()
+  94          {
+  95   1          Timer0Init();
+  96   1          InitConfig();
+  97   1          while(1)
+  98   1          {
+  99   2              trig=1;
+ 100   2              _nop_();
+ 101   2              _nop_();
+ 102   2              _nop_();
+ 103   2              _nop_();
+ 104   2              _nop_();
+ 105   2              _nop_();
+ 106   2              trig=0;
+ 107   2              while(!echo); //当RX为零时等待
+ 108   2              TR0=1; //开启计数
+ 109   2              while(echo); //当RX为1计数并等待
+ 110   2              TR0=0; //关闭计数
+ 111   2              Conut(); //计算
+ 112   2              Delay(280); //延时，反正发射信号对回响信号的影响
+ 113   2              UartSendStr(ReadBuff);
+ 114   2              DisplayNum();
+ 115   2          }
+ 116   1      }
+C51 COMPILER V9.57.0.0   MAIN                                                              12/15/2020 16:05:41 PAGE 3   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    140    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     20    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
