@@ -1,0 +1,30 @@
+#ifndef __TIME_H_
+#define __TIME_H_
+
+#endif
+
+
+/**
+* @file:time.h
+* @copyright:Copyright 2020-2021 SGMW. Co. Ltd. All Rights Reserved.
+* @brief:
+* @detail:
+* @author:郭轩铭
+* @date:2020-11-27
+* @version:v1.0
+* @record:修改记录
+*/
+
+#include "reg52.h"			 //此文件中定义了单片机的一些特殊功能寄存器
+
+#ifndef u8
+#define u8 unsigned char
+#endif 
+#ifndef u16
+#define u16 unsigned int
+#endif
+
+
+
+
+

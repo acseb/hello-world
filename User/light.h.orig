@@ -1,0 +1,61 @@
+#ifndef __LIGHT_H_
+#define __LIGHT_H_
+
+/**
+* @file:light.h
+* @copyright:Copyright 2020-2021 SGMW. Co. Ltd. All Rights Reserved.
+* @brief:
+* @detail:
+* @author:郭轩铭
+* @date:2020-11-27
+* @version:v1.0
+* @record:修改记录
+*/
+
+#include "reg52.h"
+
+
+#ifndef u8
+#define u8 unsigned char
+#endif 
+#ifndef u16
+#define u16 unsigned int
+#endif
+
+/*
+*设置138译码器
+*/
+sbit LSA = P2^2;
+sbit LSB = P2^3;
+sbit LSC = P2^4;
+
+/*
+*设声明全局变量
+*/
+extern u8 code lightsmg[18];
+extern u8 light[4];
+extern u16 sec;
+
+/*
+*显示动态数码管
+*/
+void DisplayNum();
+
+/*
+*爆炸显示
+*/
+void Twink();
+
+/*
+*138译码器
+*/
+void Drive138(unsigned char num);
+
+/*
+*定时中断
+*/
+void Timer0Init();
+
+#endif
+
+
